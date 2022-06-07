@@ -12,6 +12,6 @@ const i18n = createI18n({
 })
 
 export default (app) => {
-  app.use(ElementPlus, { locale:localeZH })
+  app.use(ElementPlus, { locale: localeZH, size: "small" })
   app.use(i18n)
 }
