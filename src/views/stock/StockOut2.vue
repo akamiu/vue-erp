@@ -3,9 +3,9 @@
         <div class="order">
             <div class="order__name">
                 <div>
-                    采购入库单
+                    销售出库
                 </div>
-                <el-button size="mini" type="primary" @click="submit">入库</el-button>
+                <el-button size="mini" type="primary" @click="submit">出库</el-button>
             </div>
             <el-form :model="postForm">
                 <div class="order__container">
@@ -13,15 +13,15 @@
                         <el-col :span="24">
                             <el-row>
                                 <el-col :span="10">
-                                    <el-form-item label="入库日期:">
-                                        <el-date-picker class="info-content" v-model="postForm.stockDate"
+                                    <el-form-item label="出库日期:">
+                                        <el-date-picker class="info-content" v-model="postForm.deliveryDate"
                                             type="datetime" format="YYYY-MM-DD" value-format="YYYY-MM-DD hh:mm:ss"
                                             placeholder="选择日期" />
                                     </el-form-item>
                                 </el-col>
                                 <el-col :span="6">
-                                    <el-form-item label="供应商:">
-                                        <el-select class="info-content" v-model="postForm.supplierId" filterable
+                                    <el-form-item label="客户:">
+                                        <el-select class="info-content" v-model="postForm.customerId" filterable
                                             placeholder="请输入关键词" remote>
                                             <el-option v-for="item in supplierList" :key="item.id" :label="item.name"
                                                 :value="item.id">
@@ -32,7 +32,7 @@
                             </el-row>
                             <el-row>
                                 <el-col :span="6">
-                                    <el-form-item label="采购人员:">
+                                    <el-form-item label="销售人员:">
                                         <el-select class="info-content" v-model="postForm.ownerId" filterable searchable
                                             placeholder="请选择">
                                             <el-option v-for="item in staffList" :key="item.id" :label="item.name"
@@ -54,9 +54,6 @@
                 <el-table-column prop="name" label="商品名称" align="center"></el-table-column>
                 <el-table-column prop="unit" label="商品单位" align="center"></el-table-column>
                 <el-table-column prop="goodsNum" label="数量" width="160" align="center">
-                    <template #default="scope">
-                        <el-input-number v-model="scope.row.goodsNum" :min="1"></el-input-number>
-                    </template>
                 </el-table-column>
                 <el-table-column prop="goodsPrice" label="单价" align="center" width="160">
                     <template #default="scope">
@@ -65,13 +62,8 @@
                 </el-table-column>
                 <el-table-column prop="amount" label="金额" align="center"></el-table-column>
                 <el-table-column prop="warehouse" label="仓库">
-                    <template #default="scope">
-                        <el-select v-model.number="scope.row.warehouseId" placeholder="" class="handle-select mr10">
-                            <el-option v-for="item in warehouseList" :key="item.id" :label="item.name"
-                                :value="item.id" />
-                        </el-select>
-                    </template>
-
+                </el-table-column>
+                <el-table-column prop="warehouseId" label="ware" v-if="false">
                 </el-table-column>
                 <el-table-column prop="msg" label="备注" align="center">
                     <template #default="scope">
@@ -90,15 +82,34 @@
                 <el-tag @click="addGoods">添加商品</el-tag>
             </div>
             <el-dialog v-model="addVisible" top="5vh" width="1050px" title="选择商品">
-                <el-table :data="tableData" border stripe class="table" ref="multipleTable"
-                    header-cell-class-name="table-header" @selection-change="handleSelectionChange">
-                    <el-table-column type="selection" width="50" />
-                    <el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
-                    <el-table-column prop="name" label="商品名称"></el-table-column>
-                    <el-table-column prop="unit" label="商品单位"></el-table-column>
-                    <el-table-column prop="category" label="商品分类"></el-table-column>
-                    <el-table-column prop="createdDate" label="创建时间"></el-table-column>
-                </el-table>
+                <div class="container">
+                    <div class="handle-box">
+                        <el-select v-model="query.warehouseId" placeholder="仓库" class="handle-select mr10"
+                            @change="handleSearch">
+                            <el-option key="-1" label="全部" :value="-1" />
+                            <el-option v-for="item in warehouseList" :key="item.id" :label="item.name"
+                                :value="item.id" />
+                        </el-select>
+                        <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
+                    </div>
+                    <el-table :data="tableData" border stripe class="table" ref="multipleTable"
+                        header-cell-class-name="table-header" @selection-change="handleSelectionChange">
+                        <el-table-column type="selection" width="50" />
+                        <el-table-column prop="warehouseId" v-if="false"></el-table-column>
+                        <el-table-column prop="goodsId" v-if="false"></el-table-column>
+                        <el-table-column prop="warehouse" label="仓库" align="center"></el-table-column>
+                        <el-table-column prop="goodsName" label="商品名称" align="center"></el-table-column>
+                        <el-table-column prop="unit" label="商品单位" align="center"></el-table-column>
+                        <el-table-column prop="category" label="商品分类" align="center"></el-table-column>
+                        <el-table-column prop="num" label="总数量" align="center"></el-table-column>
+                        <el-table-column prop="goodsNum" label="选择数量" align="center">
+                            <template #default="scope">
+                                <el-input-number v-model="scope.row.goodsNum" :min="1" :max="scope.row.num">
+                                </el-input-number>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
                 <template #footer>
                     <span class="dialog-footer">
                         <el-button @click="addVisible = false">取 消</el-button>
@@ -113,20 +124,19 @@
 <script>
 import { reactive, ref, watch } from 'vue';
 import { ElMessage, ElMessageBox } from "element-plus";
-import { getAllSupplier, getAllUser, getAllWarehouse, getGoods, addStockIn } from "../../api/index";
+import { getAllCustomer, getAllUser, getAllWarehouse, getStock, addStockOut } from "../../api/index";
 
 export default {
     setup() {
         // 获取可选择的数据
         let supplierList = ref([])
-        getAllSupplier().then((res) => {
+        getAllCustomer().then((res) => {
             supplierList.value = res
         })
         let staffList = ref([])
         getAllUser().then(res => {
             staffList.value = res
         })
-        // List<User>-> [{},{},{}]
         let warehouseList = ref([])
         getAllWarehouse().then((res) => {
             warehouseList.value = res
@@ -139,7 +149,7 @@ export default {
         const query = reactive({
             pageNum: 1,
             pageSize: 0,
-            categoryId: -1,
+            warehouseId: -1,
             name: ""
         });
         const tableData = ref([]);
@@ -148,10 +158,14 @@ export default {
             multipleSelection.value = val
         }
         const getData = () => {
-            getGoods(query).then((res) => {
+            getStock(query).then((res) => {
                 tableData.value = res.data.list;
-
             });
+        };
+        // 查询操作
+        const handleSearch = () => {
+            query.pageNum = 1;
+            getData();
         };
 
         const addGoods = () => {
@@ -161,11 +175,14 @@ export default {
             getData();
         }
         const saveChoose = () => {
-            list.value = multipleSelection.value
+            list.value = [...list.value, ...multipleSelection.value].filter((value, index, self) =>
+                index === self.findIndex((t) => (
+                    t.goodsName === value.goodsName && t.warehouseId === value.warehouseId
+                ))
+            )
             list.value.forEach(item => {
-                item.goodsNum = 1;
                 item.goodsPrice = 1.0
-                item.goodsId = item.id
+                item.name = item.goodsName
             })
             addVisible.value = false;
         }
@@ -216,8 +233,8 @@ export default {
             list.value.splice(index, 1)
         }
         const postForm = reactive({
-            stockDate: "",
-            supplierId: "",
+            deliveryDate: "",
+            customerId: "",
             ownerId: "",
 
         })
@@ -228,7 +245,7 @@ export default {
                 postForm.amount = totalAmount.value;
                 postForm.goodsList = list.value
                 console.log(postForm);
-                addStockIn(postForm).then(res => {
+                addStockOut(postForm).then(res => {
                     ElMessage.info("成功")
                 })
             }
@@ -237,6 +254,7 @@ export default {
         return {
             supplierList,
             staffList,
+            query,
             warehouseList,
             list,
             addVisible,
@@ -248,7 +266,8 @@ export default {
             getSummaries,
             deleteRow,
             submit,
-            postForm
+            postForm,
+            handleSearch
         }
     }
 }
@@ -298,5 +317,13 @@ export default {
 
 .dialog-footer {
     margin-top: 0px;
+}
+
+.handle-box {
+    margin-bottom: 5px;
+}
+
+.mr10 {
+    margin-right: 10px;
 }
 </style>

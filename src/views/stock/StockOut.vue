@@ -149,7 +149,6 @@ export default {
         const getData = () => {
             getGoods(query).then((res) => {
                 tableData.value = res.data.list;
-
             });
         };
 
@@ -160,7 +159,12 @@ export default {
             getData();
         }
         const saveChoose = () => {
-            list.value = multipleSelection.value
+            list.value = [...list.value, ...multipleSelection.value].filter((value, index, self) =>
+                index === self.findIndex((t) => (
+                    t.name === value.name
+                ))
+            )
+            // list.value.concat(multipleSelection.value)
             list.value.forEach(item => {
                 item.goodsNum = 1;
                 item.goodsPrice = 1.0

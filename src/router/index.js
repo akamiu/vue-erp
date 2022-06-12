@@ -172,7 +172,7 @@ const routes = [
                 meta: {
                     title: '商品入库'
                 },
-                component: () => import("../views/stock/StockOut.vue")
+                component: () => import("../views/stock/StockOut2.vue")
             }, {
                 path: '/transfer',
                 name: 'transfer',

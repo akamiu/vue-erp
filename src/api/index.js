@@ -305,6 +305,13 @@ export const addTransfer = query => {
         data: query
     })
 }
+export const getStatistics = query => {
+    return request({
+        url: 'http://localhost:9999/statistics',
+        method: 'post',
+        data: query
+    })
+}
 
 
 

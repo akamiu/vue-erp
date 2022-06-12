@@ -2,7 +2,6 @@
     <div>
         <div class="container">
             <div class="handle-box">
-
                 <el-select v-model="query.categoryId" placeholder="分类" class="handle-select mr10"
                     @change="handleSearch">
                     <el-option key="-1" label="全部" :value="-1" />
@@ -84,6 +83,7 @@
 import { ref, reactive } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { getGoods, getAllCategory, updateGoods, deleteGoods, deleteBatchGoods } from "../../api/index";
+import axios from "axios";
 
 export default {
     name: "Goods",
